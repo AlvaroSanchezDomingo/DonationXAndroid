@@ -8,6 +8,23 @@
         <entry key="..\:/mobile-app/week06/DonationX/app/src/main/res/layout/card_donation.xml" value="0.22291666666666668" />
         <entry key="..\:/mobile-app/week06/DonationX/app/src/main/res/menu/menu_donate.xml" value="0.22291666666666668" />
         <entry key="..\:/mobile-app/week06/DonationX/app/src/main/res/menu/menu_report.xml" value="0.22291666666666668" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.22135416666666666" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/drawable/ic_launcher_background.xml" value="0.22135416666666666" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/drawable/ic_menu_share.xml" value="0.25833333333333336" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/drawable/side_nav_bar.xml" value="0.25833333333333336" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/activity_donate.xml" value="0.2421875" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/activity_report.xml" value="0.2421875" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/app_bar_home.xml" value="0.20520833333333333" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/card_donation.xml" value="0.20520833333333333" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/content_home.xml" value="0.2421875" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/fragment_aboutus.xml" value="0.20520833333333333" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/fragment_donate.xml" value="0.2421875" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/fragment_report.xml" value="0.2421875" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/home.xml" value="0.2421875" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/layout/nav_header.xml" value="0.2421875" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/menu/menu_donate.xml" value="0.36666666666666664" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/menu/menu_report.xml" value="0.2421875" />
+        <entry key="..\:/mobile-app/week07/DonationX/app/src/main/res/menu/nav_drawer_menu.xml" value="0.2421875" />
       </map>
     </option>
   </component>
