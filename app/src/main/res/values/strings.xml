@@ -40,4 +40,5 @@
     <string name="upvotes">UpVotes :</string>
     <string name="action_donation_detail">Donation Detail</string>
 
+    <string name="messageLoading">Please Wait while the Donations are Loading...</string>
 </resources>

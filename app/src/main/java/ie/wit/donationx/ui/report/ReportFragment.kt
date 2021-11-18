@@ -1,5 +1,7 @@
 package ie.wit.donationx.ui.report
 
+import SwipeToDeleteCallback
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -8,14 +10,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.recyclerview.widget.RecyclerView
 import ie.wit.donationx.R
 import ie.wit.donationx.adapters.DonationAdapter
 import ie.wit.donationx.adapters.DonationClickListener
 import ie.wit.donationx.databinding.FragmentReportBinding
 import ie.wit.donationx.main.DonationXApp
 import ie.wit.donationx.models.DonationModel
+import ie.wit.donationx.utils.*
 
 class ReportFragment : Fragment(), DonationClickListener {
 
@@ -23,32 +27,51 @@ class ReportFragment : Fragment(), DonationClickListener {
     private var _fragBinding: FragmentReportBinding? = null
     private val fragBinding get() = _fragBinding!!
     private lateinit var reportViewModel: ReportViewModel
+    lateinit var loader : AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?
     ): View? {
         _fragBinding = FragmentReportBinding.inflate(inflater, container, false)
         val root = fragBinding.root
+        loader = createLoader(requireActivity())
 
         fragBinding.recyclerView.layoutManager = LinearLayoutManager(activity)
-
         reportViewModel = ViewModelProvider(this).get(ReportViewModel::class.java)
+        showLoader(loader,"Downloading Donations")
         reportViewModel.observableDonationsList.observe(viewLifecycleOwner, Observer {
                 donations ->
-            donations?.let { render(donations) }
+            donations?.let {
+                render(donations as ArrayList<DonationModel>)
+                hideLoader(loader)
+                checkSwipeRefresh()
+            }
         })
 
-        val fab: FloatingActionButton = fragBinding.fab
-        fab.setOnClickListener {
+        fragBinding.fab.setOnClickListener {
             val action = ReportFragmentDirections.actionReportFragmentToDonateFragment()
             findNavController().navigate(action)
         }
+
+        setSwipeRefresh()
+
+        val swipeDeleteHandler = object : SwipeToDeleteCallback(requireContext()) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                showLoader(loader,"Deleting Donation")
+                val adapter = fragBinding.recyclerView.adapter as DonationAdapter
+                adapter.removeAt(viewHolder.adapterPosition)
+                reportViewModel.delete(viewHolder.itemView.tag as String)
+                hideLoader(loader)
+            }
+        }
+        val itemTouchDeleteHelper = ItemTouchHelper(swipeDeleteHandler)
+        itemTouchDeleteHelper.attachToRecyclerView(fragBinding.recyclerView)
+
         return root
     }
 
@@ -62,18 +85,35 @@ class ReportFragment : Fragment(), DonationClickListener {
             requireView().findNavController()) || super.onOptionsItemSelected(item)
     }
 
-    private fun render(donationsList: List<DonationModel>) {
+    private fun render(donationsList: ArrayList<DonationModel>) {
         fragBinding.recyclerView.adapter = DonationAdapter(donationsList,this)
         if (donationsList.isEmpty()) {
             fragBinding.recyclerView.visibility = View.GONE
+            fragBinding.donationsNotFound.visibility = View.VISIBLE
         } else {
             fragBinding.recyclerView.visibility = View.VISIBLE
+            fragBinding.donationsNotFound.visibility = View.GONE
         }
     }
+
     override fun onDonationClick(donation: DonationModel) {
-        val action = ReportFragmentDirections.actionReportFragmentToDonationDetailFragment(donation.id)
+        val action = ReportFragmentDirections.actionReportFragmentToDonationDetailFragment(donation._id)
         findNavController().navigate(action)
     }
+
+    fun setSwipeRefresh() {
+        fragBinding.swiperefresh.setOnRefreshListener {
+            fragBinding.swiperefresh.isRefreshing = true
+            showLoader(loader,"Downloading Donations")
+            reportViewModel.load()
+        }
+    }
+
+    fun checkSwipeRefresh() {
+        if (fragBinding.swiperefresh.isRefreshing)
+            fragBinding.swiperefresh.isRefreshing = false
+    }
+
     override fun onResume() {
         super.onResume()
         reportViewModel.load()
