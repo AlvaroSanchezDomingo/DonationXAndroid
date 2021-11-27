@@ -27,20 +27,22 @@ class DonationAdapter constructor(private var donations: ArrayList<DonationModel
         holder.bind(donation,listener)
     }
 
+    fun removeAt(position: Int) {
+        donations.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     override fun getItemCount(): Int = donations.size
 
-    inner class MainHolder(val binding : CardDonationBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class MainHolder(val binding : CardDonationBinding) :
+                            RecyclerView.ViewHolder(binding.root) {
 
         fun bind(donation: DonationModel, listener: DonationClickListener) {
+            binding.root.tag = donation
             binding.donation = donation
-            binding.root.tag = donation._id
             binding.imageIcon.setImageResource(R.mipmap.ic_launcher_round)
             binding.root.setOnClickListener { listener.onDonationClick(donation) }
             binding.executePendingBindings()
         }
-    }
-    fun removeAt(position: Int) {
-        donations.removeAt(position)
-        notifyItemRemoved(position)
     }
 }

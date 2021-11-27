@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="donationvm"
+            type="ie.wit.donationx.ui.detail.DonationDetailViewModel" />
+    </data>
+
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
@@ -46,6 +54,7 @@
         android:layout_marginEnd="4dp"
         android:textAlignment="viewStart"
         android:textSize="24sp"
+        android:text="@={donationvm.observableDonation.message}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editPaymenttype" />
 
@@ -56,7 +65,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="4dp"
         android:gravity="center"
-        android:text="test"
+        android:text="@{donationvm.observableDonation.paymentmethod}"
         android:textAlignment="viewStart"
         android:textColor="@color/color_primary"
         android:textSize="24sp"
@@ -72,6 +81,7 @@
         android:ems="10"
         android:inputType="number"
         android:textSize="24sp"
+        android:text="@={``+ donationvm.observableDonation.upvotes}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editMessage" />
 
@@ -85,6 +95,7 @@
         android:inputType="number"
         android:textAlignment="viewStart"
         android:textSize="24sp"
+        android:text="@={``+ donationvm.observableDonation.amount}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -122,7 +133,7 @@
         android:id="@+id/editDonationButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Edit"
+        android:text="@string/update"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/deleteDonationButton"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -132,9 +143,11 @@
         android:id="@+id/deleteDonationButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Delete"
+        android:text="@string/delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/editDonationButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+

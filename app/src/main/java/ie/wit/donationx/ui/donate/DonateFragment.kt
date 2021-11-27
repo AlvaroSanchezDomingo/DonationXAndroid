@@ -5,6 +5,7 @@ import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -14,6 +15,7 @@ import ie.wit.donationx.R
 import ie.wit.donationx.databinding.FragmentDonateBinding
 import ie.wit.donationx.main.DonationXApp
 import ie.wit.donationx.models.DonationModel
+import ie.wit.donationx.ui.auth.LoggedInViewModel
 import ie.wit.donationx.ui.report.ReportViewModel
 
 class DonateFragment : Fragment() {
@@ -23,6 +25,8 @@ class DonateFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val fragBinding get() = _fragBinding!!
     private lateinit var donateViewModel: DonateViewModel
+    private val reportViewModel: ReportViewModel by activityViewModels()
+    private val loggedInViewModel : LoggedInViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,9 +52,6 @@ class DonateFragment : Fragment() {
             fragBinding.paymentAmount.setText("$newVal")
         }
         setButtonListener(fragBinding)
-
-
-
         return root;
     }
 
@@ -77,23 +78,12 @@ class DonateFragment : Fragment() {
                 totalDonated += amount
                 layout.totalSoFar.text = "$$totalDonated"
                 layout.progressBar.progress = totalDonated
-                val newDonation = DonationModel()
-                newDonation.amount = amount
-                newDonation.paymentmethod = paymentmethod
-
-                donateViewModel.addDonation(newDonation)
+                donateViewModel.addDonation(DonationModel(paymentmethod = paymentmethod,amount = amount,
+                    email = loggedInViewModel.liveFirebaseUser.value?.email!!))
             }
         }
     }
-    override fun onResume() {
-        super.onResume()
-        val reportViewModel = ViewModelProvider(this).get(ReportViewModel::class.java)
-        reportViewModel.observableDonationsList.observe(viewLifecycleOwner, Observer {
-            totalDonated = reportViewModel.observableDonationsList.value!!.sumOf { it.amount }
-            fragBinding.progressBar.progress = totalDonated
-            fragBinding.totalSoFar.text = "$$totalDonated"
-        })
-    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_donate, menu)
         super.onCreateOptionsMenu(menu, inflater)
@@ -101,11 +91,18 @@ class DonateFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return NavigationUI.onNavDestinationSelected(item,
-            requireView().findNavController()) || super.onOptionsItemSelected(item)
+                requireView().findNavController()) || super.onOptionsItemSelected(item)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _fragBinding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        totalDonated = reportViewModel.observableDonationsList.value!!.sumOf { it.amount }
+        fragBinding.progressBar.progress = totalDonated
+        fragBinding.totalSoFar.text = String.format(getString(R.string.totalSoFar),totalDonated)
     }
 }

@@ -6,51 +6,62 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import ie.wit.donationx.R
-import ie.wit.donationx.databinding.FragmentDonateBinding
 import ie.wit.donationx.databinding.FragmentDonationDetailBinding
+import ie.wit.donationx.ui.auth.LoggedInViewModel
 import ie.wit.donationx.ui.report.ReportViewModel
+import timber.log.Timber
+
 
 class DonationDetailFragment : Fragment() {
+
+    private lateinit var detailViewModel: DonationDetailViewModel
     private val args by navArgs<DonationDetailFragmentArgs>()
     private var _fragBinding: FragmentDonationDetailBinding? = null
-    // This property is only valid between onCreateView and onDestroyView.
     private val fragBinding get() = _fragBinding!!
+    private val loggedInViewModel : LoggedInViewModel by activityViewModels()
+    private val reportViewModel : ReportViewModel by activityViewModels()
 
-    companion object {
-        fun newInstance() = DonationDetailFragment()
-    }
-
-    private lateinit var viewModel: DonationDetailViewModel
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                            savedInstanceState: Bundle?
     ): View? {
         _fragBinding = FragmentDonationDetailBinding.inflate(inflater, container, false)
         val root = fragBinding.root
 
-        val view = inflater.inflate(R.layout.fragment_donation_detail, container, false)
-
-        Toast.makeText(context,"Donation ID Selected : ${args.donationid}",Toast.LENGTH_LONG).show()
-
-        return view
+        detailViewModel = ViewModelProvider(this).get(DonationDetailViewModel::class.java)
+        detailViewModel.observableDonation.observe(viewLifecycleOwner, Observer { render() })
+        fragBinding.editDonationButton.setOnClickListener {
+            detailViewModel.updateDonation(loggedInViewModel.liveFirebaseUser.value?.email!!,
+                args.donationid, fragBinding.donationvm?.observableDonation!!.value!!)
+            findNavController().navigateUp()
+        }
+        fragBinding.deleteDonationButton.setOnClickListener {
+            reportViewModel.delete(loggedInViewModel.liveFirebaseUser.value?.email!!,
+                detailViewModel.observableDonation.value?._id!!)
+            findNavController().navigateUp()
+        }
+        return root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        val donationDetailViewModel = ViewModelProvider(this).get(DonationDetailViewModel::class.java)
-        donationDetailViewModel.observableDonation.observe(viewLifecycleOwner, Observer {
-
-            fragBinding.editAmount.setText("amount")
-            fragBinding.editMessage.setText("message")
-            fragBinding.editPaymenttype.setText("payment")
-            fragBinding.editUpvotes.setText("votes")
-
-        })
+    private fun render() {
+        fragBinding.editMessage.setText("A Message")
+        fragBinding.editUpvotes.setText("0")
+        fragBinding.donationvm = detailViewModel
+        Timber.i("Retrofit fragBinding.donationvm == $fragBinding.donationvm")
     }
 
+    override fun onResume() {
+        super.onResume()
+        detailViewModel.getDonation(loggedInViewModel.liveFirebaseUser.value?.email!!,
+            args.donationid)
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _fragBinding = null
+    }
 }
