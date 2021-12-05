@@ -3,8 +3,9 @@ package ie.wit.donationx.ui.donate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ie.wit.donationx.models.DonationManager
+import com.google.firebase.auth.FirebaseUser
 import ie.wit.donationx.models.DonationModel
+import ie.wit.donationx.firebase.FirebaseDBManager
 
 class DonateViewModel : ViewModel() {
 
@@ -13,9 +14,11 @@ class DonateViewModel : ViewModel() {
     val observableStatus: LiveData<Boolean>
         get() = status
 
-    fun addDonation(donation: DonationModel) {
+    fun addDonation(firebaseUser: MutableLiveData<FirebaseUser>,
+                    donation: DonationModel) {
         status.value = try {
-            DonationManager.create(donation)
+            //DonationManager.create(donation)
+            FirebaseDBManager.create(firebaseUser,donation)
             true
         } catch (e: IllegalArgumentException) {
             false

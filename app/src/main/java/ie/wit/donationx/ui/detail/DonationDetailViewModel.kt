@@ -3,8 +3,8 @@ package ie.wit.donationx.ui.detail
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ie.wit.donationx.models.DonationManager
 import ie.wit.donationx.models.DonationModel
+import ie.wit.donationx.firebase.FirebaseDBManager
 import timber.log.Timber
 
 class DonationDetailViewModel : ViewModel() {
@@ -14,19 +14,20 @@ class DonationDetailViewModel : ViewModel() {
         get() = donation
         set(value) {donation.value = value.value}
 
-    fun getDonation(email:String, id: String) {
+    fun getDonation(userid:String, id: String) {
         try {
-            DonationManager.findById(email, id, donation)
-            Timber.i("Detail getDonation() Success : ${donation.value.toString()}")
+            FirebaseDBManager.findById(userid, id, donation)
+            Timber.i("Detail getDonation() Success : ${
+                donation.value.toString()}")
         }
         catch (e: Exception) {
             Timber.i("Detail getDonation() Error : $e.message")
         }
     }
 
-    fun updateDonation(email:String, id: String,donation: DonationModel) {
+    fun updateDonation(userid:String, id: String,donation: DonationModel) {
         try {
-            DonationManager.update(email, id, donation)
+            FirebaseDBManager.update(userid, id, donation)
             Timber.i("Detail update() Success : $donation")
         }
         catch (e: Exception) {

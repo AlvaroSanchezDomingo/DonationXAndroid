@@ -33,29 +33,28 @@ class DonationDetailFragment : Fragment() {
 
         detailViewModel = ViewModelProvider(this).get(DonationDetailViewModel::class.java)
         detailViewModel.observableDonation.observe(viewLifecycleOwner, Observer { render() })
+
         fragBinding.editDonationButton.setOnClickListener {
-            detailViewModel.updateDonation(loggedInViewModel.liveFirebaseUser.value?.email!!,
+            detailViewModel.updateDonation(loggedInViewModel.liveFirebaseUser.value?.uid!!,
                 args.donationid, fragBinding.donationvm?.observableDonation!!.value!!)
             findNavController().navigateUp()
         }
         fragBinding.deleteDonationButton.setOnClickListener {
-            reportViewModel.delete(loggedInViewModel.liveFirebaseUser.value?.email!!,
-                detailViewModel.observableDonation.value?._id!!)
+            reportViewModel.delete(loggedInViewModel.liveFirebaseUser.value?.uid!!,
+                detailViewModel.observableDonation.value?.uid!!)
             findNavController().navigateUp()
         }
         return root
     }
 
     private fun render() {
-        fragBinding.editMessage.setText("A Message")
-        fragBinding.editUpvotes.setText("0")
         fragBinding.donationvm = detailViewModel
         Timber.i("Retrofit fragBinding.donationvm == $fragBinding.donationvm")
     }
 
     override fun onResume() {
         super.onResume()
-        detailViewModel.getDonation(loggedInViewModel.liveFirebaseUser.value?.email!!,
+        detailViewModel.getDonation(loggedInViewModel.liveFirebaseUser.value?.uid!!,
             args.donationid)
 
     }
