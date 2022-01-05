@@ -15,7 +15,6 @@ import ie.wit.donationx.ui.auth.LoggedInViewModel
 import ie.wit.donationx.ui.report.ReportViewModel
 import timber.log.Timber
 
-
 class DonationDetailFragment : Fragment() {
 
     private lateinit var detailViewModel: DonationDetailViewModel
@@ -36,12 +35,17 @@ class DonationDetailFragment : Fragment() {
 
         fragBinding.editDonationButton.setOnClickListener {
             detailViewModel.updateDonation(loggedInViewModel.liveFirebaseUser.value?.uid!!,
-                args.donationid, fragBinding.donationvm?.observableDonation!!.value!!)
+            args.donationid, fragBinding.donationvm?.observableDonation!!.value!!)
+            //Force Reload of list to guarantee refresh
+            reportViewModel.load()
             findNavController().navigateUp()
-        }
+            //findNavController().popBackStack()
+
+                }
+
         fragBinding.deleteDonationButton.setOnClickListener {
             reportViewModel.delete(loggedInViewModel.liveFirebaseUser.value?.uid!!,
-                detailViewModel.observableDonation.value?.uid!!)
+                            detailViewModel.observableDonation.value?.uid!!)
             findNavController().navigateUp()
         }
         return root
@@ -55,8 +59,7 @@ class DonationDetailFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         detailViewModel.getDonation(loggedInViewModel.liveFirebaseUser.value?.uid!!,
-            args.donationid)
-
+                        args.donationid)
     }
 
     override fun onDestroyView() {
